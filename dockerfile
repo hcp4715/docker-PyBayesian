@@ -1,5 +1,5 @@
-# Use the official Jupyter base notebook image with Python 3.11
-FROM quay.io/jupyter/scipy-notebook:python-3.11
+# Use the official Jupyter base notebook image with Python 3.12
+FROM quay.io/jupyter/scipy-notebook:python-3.12
 
 LABEL maintainer="Hu Chuan-Peng <hcp4715@hotmail.com>"
 
@@ -23,6 +23,68 @@ RUN conda install -y \
 RUN rm -rf /home/jovyan/.cache && \
     conda clean --all --yes && \
     fix-permissions /home/jovyan
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+USER root
+
+# R pre-requisites
+RUN apt-get update --yes && \
+    apt-get install --yes --no-install-recommends \
+    fonts-dejavu \
+    unixodbc \
+    unixodbc-dev \
+    r-cran-rodbc \
+    gfortran \
+    gcc && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+    
+# R packages including IRKernel which gets installed globally.
+# r-e1071: dependency of the caret R package
+RUN mamba install --yes \
+    'r-base' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-e1071' \
+    'r-forecast' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-tidymodels' \
+    'r-tidyverse' \
+    'r-brms' \
+    'r-rstan' \
+    'r-cmdstanr' \
+    'r-ggplot2' \
+    'r-dplyr' \
+    'r-bayestestR' \
+    'r-easystats' \
+    'r-tidybayes' \
+    'r-bayesplot' \
+    'r-car' \
+    'r-ggpubr' \
+    'r-TOSTER' \
+    'r-BH' \
+    'r-pacman' \
+    'unixodbc' && \
+    mamba clean --all -f -y 
+
+# Install specified R packages from Tsinghua CRAN mirror using R command
+RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja'), \
+    dependencies = TRUE, \
+    repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+
 
 # Set the working directory
 USER $NB_UID

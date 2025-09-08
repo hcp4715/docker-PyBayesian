@@ -17,3 +17,5 @@ docker buildx build --platform linux/amd64 -t wanke/pybayesian:2024 . --load
 username: ${{ secrets.DOCKERHUB_USERNAME }}
 password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
+# Notes
+2025-9-8: update to pytho-3.12, and make it compatible with R.

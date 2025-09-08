@@ -1,5 +1,5 @@
-# Use the official Jupyter base notebook image with Python 3.12
-FROM quay.io/jupyter/scipy-notebook:python-3.12
+# Use the official Jupyter base notebook image with Python 3.11
+FROM quay.io/jupyter/scipy-notebook:python-3.11
 
 LABEL maintainer="Hu Chuan-Peng <hcp4715@hotmail.com>"
 

@@ -47,9 +47,6 @@ RUN apt-get update --yes && \
     libtiff5-dev \
     libjpeg-dev \
     gcc && \
-    software-properties-common \
-    dirmngr \
-    gnupg \
     apt-get clean && rm -rf /var/lib/apt/lists/*
     
 # R packages including IRKernel which gets installed globally.

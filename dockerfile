@@ -8,9 +8,9 @@ ENV CONDA_AUTO_UPDATE_CONDA=false \
     PATH="/opt/conda/bin:$PATH"
 
 USER root
-RUN apt-get update && apt-get install -y graphviz
+RUN apt-get update && apt-get install -y --no-install-recommends graphviz
 # Create a new conda environment and install packages
-RUN conda install -y \
+RUN mamba install -y \
     graphviz \
     bambi=0.13.0 \
     pymc=5.16.2 \
@@ -25,8 +25,6 @@ RUN rm -rf /home/jovyan/.cache && \
     fix-permissions /home/jovyan
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-USER root
 
 # R pre-requisites
 RUN apt-get update --yes && \
@@ -72,8 +70,6 @@ RUN mamba install --yes \
     'r-brms' \
     'r-rstan' \
     'r-cmdstanr' \
-    'r-ggplot2' \
-    'r-dplyr' \
     'r-bayestestR' \
     'r-easystats' \
     'r-tidybayes' \
@@ -87,9 +83,9 @@ RUN mamba install --yes \
     mamba clean --all -f -y 
 
 # Install specified R packages from Tsinghua CRAN mirror using R command
+#repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
 RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja'), \
     dependencies = TRUE)" && \
-    #repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"

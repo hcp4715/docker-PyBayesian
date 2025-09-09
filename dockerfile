@@ -121,29 +121,26 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
         'r-pacman' && \ 
         mamba clean --all -f -y ; \
     else \
-        echo ">>> arm64 build: installing R via apt (r2u)" && \
-        set -eux; \
-        echo "deb [arch=arm64,amd64] http://r2u.stat.illinois.edu/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/r2u.list; \
-        wget -qO- https://r2u.stat.illinois.edu/ubuntu/dirk_eddelbuettel_key.asc | tee /etc/apt/trusted.gpg.d/cran_ubuntu.asc; \
-        apt-get update; \
-        apt-get install -y --no-install-recommends \
-            r-base r-base-dev r-recommended \
-            r-cran-tidyverse r-cran-bayesplot r-cran-brms r-cran-rstan \
-            r-cran-caret r-cran-crayon r-cran-devtools r-cran-e1071 \
-            r-cran-forecast r-cran-hexbin r-cran-htmltools r-cran-htmlwidgets \
-            r-cran-irkernel r-cran-nycflights13 r-cran-randomforest r-cran-rcurl \
-            r-cran-rmarkdown r-cran-rodbc r-cran-rsqlite r-cran-shiny r-cran-tidymodels \
-            r-cran-cmdstanr \
-            r-cran-bayestestR r-cran-easystats r-cran-tidybayes \
-            r-cran-car r-cran-ggpubr r-cran-TOSTER r-cran-BH r-cran-pacman; \
-        apt-get clean && rm -rf /var/lib/apt/lists/* ; \
+        echo ">>> arm64 build: installing R base for arm64 only" && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends r-base r-base-dev && \
+        apt-get clean && rm -rf /var/lib/apt/lists/*; \
     fi
 
 # Install specified R packages from Tsinghua CRAN mirror using R command
 #repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
-RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja', 'patchwork'), \
-    dependencies = TRUE, \
-    repos = 'http://cran.rstudio.com/')" && \
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+    R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja', 'patchwork'), \
+    dependencies = TRUE, repos = 'http://cran.rstudio.com/')" ; \
+    else \
+    R -e "install.packages(c('car','gridExtra', \
+    'ggpubr', 'caret', 'crayon','devtools','e1071','forecast', 'hexbin', \
+    'htmltools','htmlwidgets','irkernel','nycflights13','randomforest', 'rcurl','rmarkdown', \
+    'rodbc', 'rsqlite', 'shiny', 'tidymodels','tidyverse', 'brms', 'rstan', 'cmdstanr', 'bayestestR', \
+    'easystats','tidybayes','bayesplot' , 'TOSTER','BH', 'pacman', 'BayesFactor', 'bruceR', \
+    'papaja', 'patchwork'), \
+    dependencies = TRUE, repos = 'https://cran.rstudio.com/')" ; \
+    fi && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"

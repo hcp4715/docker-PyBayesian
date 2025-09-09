@@ -36,6 +36,14 @@ RUN apt-get update --yes && \
     unixodbc-dev \
     r-cran-rodbc \
     gfortran \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
     gcc && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
     

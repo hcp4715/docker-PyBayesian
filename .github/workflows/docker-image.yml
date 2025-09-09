@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      NAME_VERSION: pybayesian:2025v1
+      NAME_VERSION: pybayesian:2025v2
     steps:
     - name: Checkout
       uses: actions/checkout@v4

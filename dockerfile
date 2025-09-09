@@ -137,7 +137,7 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
             r-cran-irkernel r-cran-nycflights13 r-cran-randomforest r-cran-rcurl \
             r-cran-rmarkdown r-cran-rodbc r-cran-rsqlite r-cran-shiny r-cran-tidymodels \
             r-cran-cmdstanr \
-            r-cran-bayestestR r-cran-easystats r-cran-tidybayes r-cran-bayesplot \
+            r-cran-bayestestR r-cran-easystats r-cran-tidybayes \
             r-cran-car r-cran-ggpubr r-cran-TOSTER r-cran-BH r-cran-pacman; \
         apt-get clean && rm -rf /var/lib/apt/lists/* ; \
     fi

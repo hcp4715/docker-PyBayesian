@@ -54,39 +54,93 @@ RUN apt-get update --yes && \
     
 # R packages including IRKernel which gets installed globally.
 # r-e1071: dependency of the caret R package
-RUN mamba install --yes \
-    'r-base' \
-    'r-caret' \
-    'r-crayon' \
-    'r-devtools' \
-    'r-e1071' \
-    'r-forecast' \
-    'r-hexbin' \
-    'r-htmltools' \
-    'r-htmlwidgets' \
-    'r-irkernel' \
-    'r-nycflights13' \
-    'r-randomforest' \
-    'r-rcurl' \
-    'r-rmarkdown' \
-    'r-rodbc' \
-    'r-rsqlite' \
-    'r-shiny' \
-    'r-tidymodels' \
-    'r-tidyverse' \
-    'r-brms' \
-    'r-rstan' \
-    'r-cmdstanr' \
-    'r-bayestestR' \
-    'r-easystats' \
-    'r-tidybayes' \
-    'r-bayesplot' \
-    'r-car' \
-    'r-ggpubr' \
-    'r-TOSTER' \
-    'r-BH' \
-    'r-pacman' && \
-    mamba clean --all -f -y 
+# RUN mamba install --yes \
+#     'r-base' \
+#     'r-caret' \
+#     'r-crayon' \
+#     'r-devtools' \
+#     'r-e1071' \
+#     'r-forecast' \
+#     'r-hexbin' \
+#     'r-htmltools' \
+#     'r-htmlwidgets' \
+#     'r-irkernel' \
+#     'r-nycflights13' \
+#     'r-randomforest' \
+#     'r-rcurl' \
+#     'r-rmarkdown' \
+#     'r-rodbc' \
+#     'r-rsqlite' \
+#     'r-shiny' \
+#     'r-tidymodels' \
+#     'r-tidyverse' \
+#     'r-brms' \
+#     'r-rstan' \
+#     'r-cmdstanr' \
+#     'r-bayestestR' \
+#     'r-easystats' \
+#     'r-tidybayes' \
+#     'r-bayesplot' \
+#     'r-car' \
+#     'r-ggpubr' \
+#     'r-TOSTER' \
+#     'r-BH' \
+#     'r-pacman' && \
+#     mamba clean --all -f -y 
+
+# Conditional R installation
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        echo ">>> amd64 build: installing R via conda-forge" && \
+        mamba install -y 'r-base' \
+        'r-caret' \
+        'r-crayon' \
+        'r-devtools' \
+        'r-e1071' \
+        'r-forecast' \
+        'r-hexbin' \
+        'r-htmltools' \
+        'r-htmlwidgets' \
+        'r-irkernel' \
+        'r-nycflights13' \
+        'r-randomforest' \
+        'r-rcurl' \
+        'r-rmarkdown' \
+        'r-rodbc' \
+        'r-rsqlite' \
+        'r-shiny' \
+        'r-tidymodels' \
+        'r-tidyverse' \
+        'r-brms' \
+        'r-rstan' \
+        'r-cmdstanr' \
+        'r-bayestestR' \
+        'r-easystats' \
+        'r-tidybayes' \
+        'r-bayesplot' \
+        'r-car' \
+        'r-ggpubr' \
+        'r-TOSTER' \
+        'r-BH' \
+        'r-pacman' && \ 
+        mamba clean --all -f -y ; \
+    else \
+        echo ">>> arm64 build: installing R via apt (r2u)" && \
+        set -eux; \
+        echo "deb [arch=arm64,amd64] http://r2u.stat.illinois.edu/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/r2u.list; \
+        wget -qO- https://r2u.stat.illinois.edu/ubuntu/dirk_eddelbuettel_key.asc | tee /etc/apt/trusted.gpg.d/cran_ubuntu.asc; \
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+            r-base r-base-dev r-recommended \
+            r-cran-tidyverse r-cran-bayesplot r-cran-brms r-cran-rstan \
+            r-cran-caret r-cran-crayon r-cran-devtools r-cran-e1071 \
+            r-cran-forecast r-cran-hexbin r-cran-htmltools r-cran-htmlwidgets \
+            r-cran-irkernel r-cran-nycflights13 r-cran-randomforest r-cran-rcurl \
+            r-cran-rmarkdown r-cran-rodbc r-cran-rsqlite r-cran-shiny r-cran-tidymodels \
+            r-cran-cmdstanr \
+            r-cran-bayestestR r-cran-easystats r-cran-tidybayes r-cran-bayesplot \
+            r-cran-car r-cran-ggpubr r-cran-TOSTER r-cran-BH r-cran-pacman; \
+        apt-get clean && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # Install specified R packages from Tsinghua CRAN mirror using R command
 #repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \

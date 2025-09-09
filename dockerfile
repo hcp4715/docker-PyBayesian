@@ -10,14 +10,14 @@ ENV CONDA_AUTO_UPDATE_CONDA=false \
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends graphviz
 # Create a new conda environment and install packages
-RUN mamba install -y \
+RUN conda install -y \
     graphviz \
     bambi=0.13.0 \
     pymc=5.16.2 \
     PreliZ=0.9.0 \
     ipympl=0.9.4 \
     pingouin=0.5.4 && \
-    mamba clean --all --yes
+    conda clean --all --yes
 
 # Remove cache and unused packages to reduce image size
 RUN rm -rf /home/jovyan/.cache && \

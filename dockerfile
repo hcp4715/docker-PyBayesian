@@ -17,7 +17,7 @@ RUN mamba install -y \
     PreliZ=0.9.0 \
     ipympl=0.9.4 \
     pingouin=0.5.4 && \
-    conda clean --all --yes
+    mamba clean --all --yes
 
 # Remove cache and unused packages to reduce image size
 RUN rm -rf /home/jovyan/.cache && \

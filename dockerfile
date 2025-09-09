@@ -80,7 +80,7 @@ RUN mamba install --yes \
 
 # Install specified R packages from Tsinghua CRAN mirror using R command
 RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja'), \
-    dependencies = TRUE) && \
+    dependencies = TRUE)" && \
     #repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \

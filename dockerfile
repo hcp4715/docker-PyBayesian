@@ -3,6 +3,10 @@ FROM quay.io/jupyter/scipy-notebook:python-3.11
 
 LABEL maintainer="Hu Chuan-Peng <hcp4715@hotmail.com>"
 
+# Build-time argument (Docker sets TARGETARCH automatically: amd64 / arm64)
+ARG TARGETARCH
+ENV TARGETARCH=${TARGETARCH}
+
 # Set environment variables to minimize Docker image size
 ENV CONDA_AUTO_UPDATE_CONDA=false \
     PATH="/opt/conda/bin:$PATH"
@@ -43,6 +47,9 @@ RUN apt-get update --yes && \
     libtiff5-dev \
     libjpeg-dev \
     gcc && \
+    software-properties-common \
+    dirmngr \
+    gnupg \
     apt-get clean && rm -rf /var/lib/apt/lists/*
     
 # R packages including IRKernel which gets installed globally.
@@ -78,13 +85,12 @@ RUN mamba install --yes \
     'r-ggpubr' \
     'r-TOSTER' \
     'r-BH' \
-    'r-pacman' \
-    'unixodbc' && \
+    'r-pacman' && \
     mamba clean --all -f -y 
 
 # Install specified R packages from Tsinghua CRAN mirror using R command
 #repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
-RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja'), \
+RUN R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja', 'patchwork'), \
     dependencies = TRUE, \
     repos = 'http://cran.rstudio.com/')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \

@@ -99,7 +99,7 @@ RUN R -e "install.packages(c('bruceR','papaja'), \
     fix-permissions "/home/${NB_USER}"
 
 USER $NB_UID 
-RUN R -e "install.packages('cmdstanr', repos = c('https://stan-dev.r-universe.dev'))" && \
+RUN R -e "cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"

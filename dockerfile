@@ -50,102 +50,51 @@ RUN apt-get update --yes && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
     
 # R packages including IRKernel which gets installed globally.
-# r-e1071: dependency of the caret R package
-# RUN mamba install --yes \
-#     'r-base' \
-#     'r-caret' \
-#     'r-crayon' \
-#     'r-devtools' \
-#     'r-e1071' \
-#     'r-forecast' \
-#     'r-hexbin' \
-#     'r-htmltools' \
-#     'r-htmlwidgets' \
-#     'r-irkernel' \
-#     'r-nycflights13' \
-#     'r-randomforest' \
-#     'r-rcurl' \
-#     'r-rmarkdown' \
-#     'r-rodbc' \
-#     'r-rsqlite' \
-#     'r-shiny' \
-#     'r-tidymodels' \
-#     'r-tidyverse' \
-#     'r-brms' \
-#     'r-rstan' \
-#     'r-cmdstanr' \
-#     'r-bayestestR' \
-#     'r-easystats' \
-#     'r-tidybayes' \
-#     'r-bayesplot' \
-#     'r-car' \
-#     'r-ggpubr' \
-#     'r-TOSTER' \
-#     'r-BH' \
-#     'r-pacman' && \
-#     mamba clean --all -f -y 
+RUN mamba install --yes \
+    'r-base' \
+    'r-car' \
+    'r-caret' \
+    'r-crayon' \
+    'r-devtools' \
+    'r-e1071' \
+    'r-forecast' \
+    'r-ggpubr' \
+    'r-gridExtra' \
+    'r-hexbin' \
+    'r-htmltools' \
+    'r-htmlwidgets' \
+    'r-irkernel' \
+    'r-nycflights13' \
+    'r-randomforest' \
+    'r-rcurl' \
+    'r-rmarkdown' \
+    'r-rodbc' \
+    'r-rsqlite' \
+    'r-shiny' \
+    'r-tidymodels' \
+    'r-tidyverse' \
+    'r-brms' \
+    'r-rstan' \
+    'r-cmdstanr' \
+    'r-BayesFactor' \
+    'r-bayestestR' \
+    'r-easystats' \
+    'r-tidybayes' \
+    'r-bayesplot' \
+    'r-TOSTER' \
+    'r-BH' \
+    'r-pacman' \
+    'r-patchwork' \
+    'r-papaja' && \
+    mamba clean --all -f -y 
 
-# Conditional R installation
-RUN if [ "$TARGETARCH" = "amd64" ]; then \
-        echo ">>> amd64 build: installing R via conda-forge" && \
-        mamba install -y 'r-base' \
-        'r-caret' \
-        'r-crayon' \
-        'r-devtools' \
-        'r-e1071' \
-        'r-forecast' \
-        'r-hexbin' \
-        'r-htmltools' \
-        'r-htmlwidgets' \
-        'r-irkernel' \
-        'r-nycflights13' \
-        'r-randomforest' \
-        'r-rcurl' \
-        'r-rmarkdown' \
-        'r-rodbc' \
-        'r-rsqlite' \
-        'r-shiny' \
-        'r-tidymodels' \
-        'r-tidyverse' \
-        'r-brms' \
-        'r-rstan' \
-        'r-cmdstanr' \
-        'r-bayestestR' \
-        'r-easystats' \
-        'r-tidybayes' \
-        'r-bayesplot' \
-        'r-car' \
-        'r-ggpubr' \
-        'r-TOSTER' \
-        'r-BH' \
-        'r-pacman' && \ 
-        mamba clean --all -f -y ; \
-    else \
-        echo ">>> arm64 build: installing R base for arm64 only" && \
-        apt-get update && \
-        apt-get install -y --no-install-recommends r-base r-base-dev && \
-        apt-get clean && rm -rf /var/lib/apt/lists/*; \
-    fi
-
-# Install specified R packages from Tsinghua CRAN mirror using R command
-#repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/')" && \
-RUN if [ "$TARGETARCH" = "amd64" ]; then \
-    R -e "install.packages(c('gridExtra', 'bruceR', 'BayesFactor', 'papaja', 'patchwork'), \
+# Install specified R packages that were not installed from conda-forge
+# from different mirrors using R command, e.g.,repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/'
+RUN R -e "install.packages(c('bruceR'), \
     dependencies = TRUE, repos = 'http://cran.rstudio.com/')" ; \
-    else \
-    R -e "install.packages(c('car','gridExtra', \
-    'ggpubr', 'caret', 'crayon','devtools','e1071','forecast', 'hexbin', \
-    'htmltools','htmlwidgets','irkernel','nycflights13','randomforest', 'rcurl','rmarkdown', \
-    'rodbc', 'rsqlite', 'shiny', 'tidymodels','tidyverse', 'brms', 'rstan', 'cmdstanr', 'bayestestR', \
-    'easystats','tidybayes','bayesplot' , 'TOSTER','BH', 'pacman', 'BayesFactor', 'bruceR', \
-    'papaja', 'patchwork'), \
-    dependencies = TRUE, repos = 'https://cran.rstudio.com/')" ; \
-    fi && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
-
-
 # Set the working directory
 USER $NB_UID
 WORKDIR $HOME

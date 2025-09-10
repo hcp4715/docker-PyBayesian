@@ -42,6 +42,9 @@ RUN apt-get update --yes && \
     libssl-dev \
     libxml2-dev \
     libfontconfig1-dev \
+    cmake \
+    libharfbuzz-dev \
+    libfribidi-dev \
     libfreetype6-dev \
     libpng-dev \
     libtiff5-dev \
@@ -84,17 +87,23 @@ RUN mamba install --yes \
     'r-TOSTER' \
     'r-BH' \
     'r-pacman' \
-    'r-patchwork' \
-    'r-papaja' && \
+    'r-patchwork' && \
     mamba clean --all -f -y 
 
 # Install specified R packages that were not installed from conda-forge
 # from different mirrors using R command, e.g.,repos = 'https://mirrors.tuna.tsinghua.edu.cn/CRAN/'
-RUN R -e "install.packages(c('bruceR'), \
+RUN R -e "install.packages(c('bruceR','papaja'), \
     dependencies = TRUE, repos = 'http://cran.rstudio.com/')" ; \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
+USER $NB_UID 
+RUN R -e "install.packages('cmdstanr', repos = c('https://stan-dev.r-universe.dev'))" && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds /tmp/Rtmp* && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+
 # Set the working directory
 USER $NB_UID
 WORKDIR $HOME
